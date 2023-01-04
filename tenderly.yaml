@@ -1,0 +1,15 @@
+account_id: ""
+project_slug: ""
+actions:
+  dr_gorilla/drg:
+    runtime: v2
+    sources: actions
+    specs:
+      readBalance:
+        description: Follow the terminal balance in each new block.
+        function: readBalance:readBalance
+        trigger:
+          type: block
+          block:
+            network: 1
+            blocks: 1

@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@tenderly/actions-test": "^0.1.0",
+    "axios": "^1.2.2",
+    "ethers": "^5.7.2"
+  }
+}

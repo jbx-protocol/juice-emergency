@@ -1,0 +1,11 @@
+.env
+node_modules
+package-lock.json
+
+actions/.env
+actions/node_modules
+actions/package-lock.json
+
+actions-tests/.env
+actions-tests/node_modules
+actions-tests/package-lock.json
