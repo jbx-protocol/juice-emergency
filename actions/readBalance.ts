@@ -1,4 +1,4 @@
-import { ActionFn, Context } from "@tenderly/actions";
+import { ActionFn, Context, Event, BlockEvent } from "@tenderly/actions";
 import { BigNumber, Contract, ethers } from "ethers";
 
 import { abi as jbV3EthTerminalAbi } from "./artifacts/JBETHPaymentTerminal.json";
@@ -13,8 +13,9 @@ const provider = new ethers.providers.JsonRpcProvider(
  *         trigger an alarm if the change in terminal balance is not reflected through the events
  * @param context context passed by Tenderly
  */
-export const readBalance: ActionFn = async (context: Context) => {
+export const readBalance: ActionFn = async (context: Context, event: Event) => {
   const _jbV3EthTerminal: string = "0x594Cb208b5BB48db1bcbC9354d1694998864ec63";
+  const blockEvent = event as BlockEvent;
 
   const balanceInWei: BigNumber = await provider.getBalance(_jbV3EthTerminal);
   const previousBalance: BigNumber = ethers.BigNumber.from(
@@ -37,11 +38,12 @@ export const readBalance: ActionFn = async (context: Context) => {
       provider.getSigner(0)
     );
 
+    // Test with Pay for now
     let eventFilter = terminalContract.filters.Pay();
     let events = await terminalContract.queryFilter(
       eventFilter,
-      "latest",
-      "latest"
+      blockEvent.blockNumber,
+      blockEvent.blockNumber
     );
     console.log(events);
   }
