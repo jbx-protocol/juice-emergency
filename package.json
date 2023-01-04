@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "@types/node": "^18.11.18"
+  },
+  "scripts": {
+    "deploy": "tenderly actions deploy",
+    "test": "ts-node actions-test/readBalance-test-local.ts"
   }
 }

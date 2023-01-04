@@ -5,8 +5,8 @@ actions:
     runtime: v2
     sources: actions
     specs:
-      readBalance:
-        description: Follow the terminal balance in each new block.
+      terminalBalance:
+        description: Follow the terminal balance in each new block and compare change to relevant events
         function: readBalance:readBalance
         trigger:
           type: block
