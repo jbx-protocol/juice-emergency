@@ -39,7 +39,7 @@ In the event of an emergency situation, the following roles should be assigned t
 - Multisig Lead
 - Contract Lead
 - Frontend Lead
-- Ops
+- Ops Lead
 
 A contributor may be assigned up to two of these roles concurrently. For certain emergency types, multiple contributors may be assigned to these roles (for example, a severe frontend exploit may necessitate multiple frontend leads in order to coordinate rapid changes across multiple frontends).
 
