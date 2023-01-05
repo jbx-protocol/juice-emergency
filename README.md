@@ -7,7 +7,7 @@ this repo is a mess. For now.
 
 
 
-yarn test
-yarn deploy
+- yarn test
+- yarn deploy
 
-To craft new payloads in tests: cast receipt 0x3859ab5e588c8d3c07fa9f4ae57169c72f350278c4e2fb460da542931f3d5739 --rpc-url $MAINNET --json > pay.json
+- To craft new payloads in tests: cast receipt 0x3859ab5e588c8d3c07fa9f4ae57169c72f350278c4e2fb460da542931f3d5739 --rpc-url $MAINNET --json > pay.json

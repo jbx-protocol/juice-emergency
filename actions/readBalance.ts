@@ -45,6 +45,16 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
       blockEvent.blockNumber,
       blockEvent.blockNumber
     );
-    console.log(events);
+
+    let cumSum = ethers.BigNumber.from("0");
+
+    for (let i = 0; i < events.length; i++) {
+      cumSum += events[i].args?.amount;
+    }
+
+    if (cumSum != balanceInWei) {
+      await context.storage.putJson("difference", balanceInWei.sub(cumSum));
+    }
+
   }
 };
