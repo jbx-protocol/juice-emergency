@@ -100,17 +100,24 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
     // If the difference is not zero, trigger an alarm
     if (cumSum != balanceInWei) {
       await context.storage.putJson(
-        "difference",
+        "difference-" + blockEvent.blockNumber,
         balanceInWei.sub(previousBalance).sub(cumSum)
       );
 
-      await context.storage.putJson("sum_events", cumSum);
+      await context.storage.putJson(
+        "sum_events-" + blockEvent.blockNumber,
+        cumSum
+      );
 
-      await context.storage.putJson("terminal_balance", balanceInWei);
+      await context.storage.putJson(
+        "terminal_balance-" + blockEvent.blockNumber,
+        balanceInWei
+      );
 
-      await context.storage.putJson("previous_balance", previousBalance);
-
-      await context.storage.putJson("block_height", blockEvent.blockNumber);
+      await context.storage.putJson(
+        "previous_balance-" + blockEvent.blockNumber,
+        previousBalance
+      );
 
       // Insert Discord hook or smth here
       console.log("cumSum: " + cumSum);
