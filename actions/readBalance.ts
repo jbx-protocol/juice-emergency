@@ -37,7 +37,6 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
       provider.getSigner(0)
     );
 
-    // TODO: batch rpc calls
     // TODO: double-check the amounts in events (net or with reserved part, if any?)
 
     const eventNames = [
