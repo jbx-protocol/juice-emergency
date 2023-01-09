@@ -38,42 +38,33 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
     );
 
     // TODO: batch rpc calls
+    // TODO: double-check the amounts in events (net or with reserved part, if any?)
 
-    // Query each filter, as ethers doesn't suppoort combining filters
-    let payEvents = await terminalContract.queryFilter(
-      terminalContract.filters.Pay(),
-      blockEvent.blockNumber,
-      blockEvent.blockNumber
-    );
+    const eventNames = [
+      "Pay",
+      "RedeemTokens",
+      "AddToBalance",
+      "DistributePayouts",
+      "UseAllowance",
+      "Migrate",
+    ];
 
-    let redeemEvents = await terminalContract.queryFilter(
-      terminalContract.filters.RedeemTokens(),
-      blockEvent.blockNumber,
-      blockEvent.blockNumber
-    );
-
-    let addToBalanceEvents = await terminalContract.queryFilter(
-      terminalContract.filters.AddToBalance(),
-      blockEvent.blockNumber,
-      blockEvent.blockNumber
-    );
-
-    let distributePayoutsEvents = await terminalContract.queryFilter(
-      terminalContract.filters.DistributePayouts(),
-      blockEvent.blockNumber,
-      blockEvent.blockNumber
-    );
-
-    let useAllowanceEvents = await terminalContract.queryFilter(
-      terminalContract.filters.UseAllowance(),
-      blockEvent.blockNumber,
-      blockEvent.blockNumber
-    );
-
-    let migrateEvents = await terminalContract.queryFilter(
-      terminalContract.filters.Migrate(),
-      blockEvent.blockNumber,
-      blockEvent.blockNumber
+    // Query each filter, as ethers doesn't support combining filters
+    let [
+      payEvents,
+      redeemEvents,
+      addToBalanceEvents,
+      distributePayoutsEvents,
+      useAllowanceEvents,
+      migrateEvents,
+    ] = await Promise.all(
+      eventNames.map((eventName) =>
+        terminalContract.queryFilter(
+          terminalContract.filters[eventName](),
+          blockEvent.blockNumber,
+          blockEvent.blockNumber
+        )
+      )
     );
 
     // Count the amounts which should enter/leave the terminal:
@@ -113,8 +104,17 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
         "difference",
         balanceInWei.sub(previousBalance).sub(cumSum)
       );
-    }
 
-    console.log("cumSum: " + cumSum);
+      await context.storage.putJson("sum_events", cumSum);
+
+      await context.storage.putJson("terminal_balance", balanceInWei);
+
+      await context.storage.putJson("previous_balance", previousBalance);
+
+      await context.storage.putJson("block_height", blockEvent.blockNumber);
+
+      // Insert Discord hook or smth here
+      console.log("cumSum: " + cumSum);
+    }
   }
 };
