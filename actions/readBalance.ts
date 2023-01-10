@@ -98,7 +98,7 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
     }
 
     // If the difference is not zero, trigger an alarm
-    if (cumSum != balanceInWei) {
+    if (cumSum != balanceInWei.sub(previousBalance)) {
       await context.storage.putJson(
         "difference-" + blockEvent.blockNumber,
         balanceInWei.sub(previousBalance).sub(cumSum)
