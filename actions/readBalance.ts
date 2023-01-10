@@ -17,8 +17,10 @@ const _jbV3EthTerminal: string = "0x594Cb208b5BB48db1bcbC9354d1694998864ec63";
 export const readBalance: ActionFn = async (context: Context, event: Event) => {
   const blockEvent = event as BlockEvent;
   const balanceInWei: BigNumber = await provider.getBalance(_jbV3EthTerminal);
+
+  const previousBalanceString = await context.storage.getJson("balance");
   const previousBalance: BigNumber = ethers.BigNumber.from(
-    await context.storage.getJson("balance")
+    previousBalanceString != null ? previousBalanceString : "0"
   );
 
   // Store the current balance to compare during next run

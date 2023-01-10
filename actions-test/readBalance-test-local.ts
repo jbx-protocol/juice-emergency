@@ -12,8 +12,6 @@ const main = async () => {
     "https://rpc.ankr.com/eth"
   );
 
-  //const blockNumber = await provider.getBlockNumber();
-
   const testRuntime = new TestRuntime();
   const balanceInWei: BigNumber = await provider.getBalance(_jbV3EthTerminal);
 
