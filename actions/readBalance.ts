@@ -1,7 +1,10 @@
+import dotenv from 'dotenv'
 import { ActionFn, Context, Event, BlockEvent } from "@tenderly/actions";
 import { BigNumber, Contract, ethers } from "ethers";
 
 import { abi as jbV3EthTerminalAbi } from "./artifacts/JBETHPaymentTerminal.json";
+
+dotenv.config()
 
 const provider = new ethers.providers.JsonRpcProvider(
   "https://rpc.ankr.com/eth"
@@ -121,8 +124,22 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
         previousBalance
       );
 
-      // Insert Discord hook or smth here
-      console.log("cumSum: " + cumSum);
+      // Define message for Discord + Telegram
+      const message = `cumSum: ${cumSum}`
+      console.log('Message: ', message);
+
+      // Discord hook
+      fetch(process.env.DISCORD_WEBHOOK as unknown as URL, {
+        body: JSON.stringify({ content: message }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }).then(res => res.json())
+      .then(json => console.log('Discord Response: ', json))
+
+      // Telegram hook
+      fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`)
+      .then(res => res.json())
+      .then(json => console.log('Telegram Response: ', json))
     }
   }
 };
