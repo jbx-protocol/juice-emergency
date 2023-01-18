@@ -13,6 +13,5 @@
         "@tenderly/actions": "^0.1.0",
         "dotenv": "^16.0.3"
     },
-    "private": true,
-    "type": "module"
+    "private": true
 }
