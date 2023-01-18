@@ -62,7 +62,7 @@ Main responsibilities:
 
 Coordinates quick changes to contracts during the emergency, including but not limited to:
 
-- Advising on and facilitating the queuing and execution of [administrative multisig actions](https://info.juicebox.money/dev/learn/administration/) as necessary.
+- Advising on and facilitating the queuing and execution of [administrative multisig actions](/dev/learn/administration/) as necessary.
 - Facilitating upgrades, migrations, and the deployment of new smart contracts as necessary.
 
 ### Frontend Lead
@@ -90,7 +90,7 @@ This is the guideline to follow when an incident is reported.
 
 The primary objective is to minimize the loss of funds, in particular for Juicebox users. All decisions made should be driven by this goal.
 
-1. Open a private communication channel (War Room) and only invite (i) online contributors that can fulfill the roles described above, as well as (ii) additional persons that can provide critical insight into the circumstances of the issue and how it can best be resolved.
+1. Open a private communication channel (War Room) and only invite (i) online contributors that can fulfill the roles described above, as well as (ii) additional persons that can provide critical insight into the circumstances of the issue and how it can best be resolved. Check the [Services List](../services) and invite contributors relevant to the problem.
 2. Information shared in the War Room shall be considered private and should not be shared with any third parties. Relevant data should be pinned and updated by the Facilitator for the team to have handy.
 3. The team's first milestone is to assess the situation as quickly as possible: Confirming the reported information and determining how critical the incident is. A few questions to guide this process:
    - Is there confirmation from several team members/sources that the issue is valid? Are there example transactions that show the incident occurring? (Pin these in the War Room)
@@ -101,7 +101,7 @@ The primary objective is to minimize the loss of funds, in particular for Juiceb
    - If there is no immediate risk of loss of funds, does the team still need to take preventive action or some other mitigation?
    - Is there consensus that the situation is under control and that the War Room can be closed?
 4. Once the issue has been confirmed as valid, the next step is to take immediate corrective action to prevent further loss of funds. If the root cause requires further research, the team should tend towards caution and take emergency preventive actions while the assessment continues. A few questions to guide the decisions of the team:
-   - What [administrative transactions](https://info.juicebox.money/dev/learn/administration/) are required? Contract Lead should confirm this step.
+   - What [administrative transactions](/dev/learn/administration/) are required? Contract Lead should confirm this step.
    - Should payments, redemptions, or other features be removed or disabled from frontends? Frontend Lead should confirm this step.
    - Are multiple Team members able to confirm that corrective actions will stop the immediate risk through Ganache/Tenderly/other fork testing? Contract Lead should confirm this step.
    - Will immediate public communications/announcements help to minimize the loss of funds? Ops Lead should confirm this step.
@@ -127,7 +127,7 @@ The primary objective is to minimize the loss of funds, in particular for Juiceb
 
 - [ ] Create War Room
 - [ ] Assign Key Roles to War Room members
-- [ ] Add relevant developer(s) to the War Room
+- [ ] Add relevant developer(s) to the War Room (check the [Services List](../services))
 - [ ] Clear queued transactions on relevant Multisig(s)
 - [ ] Disable payments, redemptions, or other features as needed in the frontend(s)
 - [ ] Identify and confirm the issue, as well as any relevant transactions (pin to War Room)
