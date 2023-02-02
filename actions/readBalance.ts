@@ -23,13 +23,16 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
 
   const previousBalanceString = await context.storage.getJson("balance");
   const previousBalance: BigNumber = ethers.BigNumber.from(
-    previousBalanceString != null ? previousBalanceString : "0"
+    Object.keys(previousBalanceString).length != 0 ? previousBalanceString : "0"
   );
 
   // Store the current balance to compare during next run
   await context.storage.putJson("balance", balanceInWei);
 
-  if (!balanceInWei.eq(previousBalance)) {
+  if (
+    !balanceInWei.eq(previousBalance) &&
+    Object.keys(previousBalanceString).length != 0
+  ) {
     console.log("balance changed!");
     console.log("current balance: " + balanceInWei);
     console.log("previous balance: " + previousBalance);

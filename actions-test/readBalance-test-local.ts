@@ -3,38 +3,78 @@ import { TestRuntime } from "@tenderly/actions-test";
 import { readBalance } from "../actions/readBalance";
 import { BigNumber, ethers } from "ethers";
 
+import { abi as jbV3EthTerminalAbi } from "../actions/artifacts/JBETHPaymentTerminal.json";
 import payPayload from "./payloads/pay.json";
 
 const _jbV3EthTerminal: string = "0x594Cb208b5BB48db1bcbC9354d1694998864ec63";
 
-const main = async () => {
-  const provider = new ethers.providers.JsonRpcProvider(
-    "https://rpc.ankr.com/eth"
-  );
+import { expect } from "chai";
 
-  const testRuntime = new TestRuntime();
-  const balanceInWei: BigNumber = await provider.getBalance(_jbV3EthTerminal);
+describe("readBalance()", () => {
+  let provider: ethers.providers.JsonRpcProvider;
+  let testRuntime: TestRuntime;
+  let terminalContract: ethers.Contract;
 
-  // We set an arbitrary previous balance
-  testRuntime.context.storage.putJson(
-    "balance",
-    balanceInWei.add(1).toString()
-  );
+  before(async () => {
+    provider = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/eth");
+    terminalContract = new ethers.Contract(
+      _jbV3EthTerminal,
+      jbV3EthTerminalAbi,
+      provider.getSigner(0)
+    );
+  });
 
-  // We initialize the difference to 0
-  testRuntime.context.storage.putJson(
-    "difference-" + payPayload.blockNumber,
-    "0"
-  );
+  beforeEach(() => {
+    testRuntime = new TestRuntime();
+  });
 
-  // Execute the action based on a single transaction with a Pay event of 0xc6f3b40b6c0000
-  await testRuntime.execute(readBalance, payPayload);
+  it("Should not log anything if terminal balance does not change", async () => {
+    const currentBalanceInWei: BigNumber = await provider.getBalance(
+      _jbV3EthTerminal
+    );
 
-  console.log(
-    await testRuntime.context.storage.getJson(
-      "difference-" + payPayload.blockNumber
-    )
-  );
-};
+    // Previous balance is the same as current balance
+    testRuntime.context.storage.putJson(
+      "balance",
+      currentBalanceInWei.toString()
+    );
 
-(async () => await main())();
+    // Execute the action based on a single transaction with a Pay event of 0xc6f3b40b6c0000
+    await testRuntime.execute(readBalance, payPayload);
+
+    const balanceAfterTransaction: BigNumber = ethers.BigNumber.from(
+      await testRuntime.context.storage.getJson("balance")
+    );
+
+    expect(balanceAfterTransaction).to.eql(currentBalanceInWei);
+    expect(
+      await testRuntime.context.storage.getJson(
+        "difference-" + payPayload.blockNumber
+      )
+    ).to.be.empty;
+  });
+
+  it("Should log a change in the terminal balance, if the event cum sum is not consistent with it", async () => {
+    const currentBalanceInWei: BigNumber = await provider.getBalance(
+      _jbV3EthTerminal
+    );
+
+    // We set an arbitrary previous balance, 100 wei less than current
+    testRuntime.context.storage.putJson(
+      "balance",
+      currentBalanceInWei.sub(100).toString()
+    );
+
+    // The transaction payload value
+    console.log(terminalContract.interface.parseLog({"Pay", payPayload}));
+
+    // Execute the action based on a single transaction with a Pay event of 0xc6f3b40b6c0000
+    await testRuntime.execute(readBalance, payPayload);
+
+    // expect(
+    //   await testRuntime.context.storage.getJson(
+    //     "difference-" + payPayload.blockNumber
+    //   )
+    // ).to.be.eql.to("100");
+  });
+});

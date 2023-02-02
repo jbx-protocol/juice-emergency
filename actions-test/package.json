@@ -1,9 +1,0 @@
-{
-  "devDependencies": {
-    "@tenderly/actions-test": "^0.1.0",
-    "@types/chai": "^4.3.4",
-    "axios": "^1.2.2",
-    "chai": "^4.3.7",
-    "ethers": "^5.7.2"
-  }
-}
