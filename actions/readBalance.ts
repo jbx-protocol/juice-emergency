@@ -1,10 +1,7 @@
-import dotenv from 'dotenv'
 import { ActionFn, Context, Event, BlockEvent } from "@tenderly/actions";
 import { BigNumber, Contract, ethers } from "ethers";
 
 import { abi as jbV3EthTerminalAbi } from "./artifacts/JBETHPaymentTerminal.json";
-
-dotenv.config()
 
 const provider = new ethers.providers.JsonRpcProvider(
   "https://rpc.ankr.com/eth"
@@ -131,16 +128,23 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
       const message = `cumSum: ${cumSum}`
       console.log('Message: ', message);
 
+      const DISCORD_WEBHOOK = context.secrets.get("DISCORD_WEBHOOK")
+      const DISCORD_ROLE_ID = context.secrets.get("DISCORD_ROLE_ID")
+      const TELEGRAM_TOKEN = context.secrets.get("TELEGRAM_TOKEN")
+      const TELEGRAM_CHAT_ID = context.secrets.get("TELEGRAM_CHAT_ID")
+
+      await Promise.all([DISCORD_WEBHOOK, DISCORD_ROLE_ID, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
+
       // Discord hook
-      fetch(process.env.DISCORD_WEBHOOK as unknown as URL, {
-        body: JSON.stringify({ content: message }),
+      fetch(DISCORD_WEBHOOK as unknown as URL, {
+        body: JSON.stringify({ content: `<@&${DISCORD_ROLE_ID}>: ${message}` }),
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       }).then(res => res.json())
       .then(json => console.log('Discord Response: ', json))
 
       // Telegram hook
-      fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`)
+      fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${message}`)
       .then(res => res.json())
       .then(json => console.log('Telegram Response: ', json))
     }
