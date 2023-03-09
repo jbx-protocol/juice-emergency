@@ -5,6 +5,7 @@ import { BigNumber, ethers } from "ethers";
 
 import { abi as jbV3EthTerminalAbi } from "../actions/artifacts/JBETHPaymentTerminal.json";
 import payPayload from "./payloads/pay.json";
+import distributePayoutPayload from "./payloads/distributePayouts.json";
 
 const _jbV3EthTerminal: string = "0x594Cb208b5BB48db1bcbC9354d1694998864ec63";
 
@@ -34,7 +35,7 @@ describe("readBalance()", () => {
     );
 
     // Previous balance is the same as current balance
-    testRuntime.context.storage.putJson(
+    await testRuntime.context.storage.putJson(
       "balance",
       currentBalanceInWei.toString()
     );
@@ -52,29 +53,40 @@ describe("readBalance()", () => {
         "difference-" + payPayload.blockNumber
       )
     ).to.be.empty;
-  });
+  }).timeout(50000);
 
-  it("Should log a change in the terminal balance, if the event cum sum is not consistent with it", async () => {
-    const currentBalanceInWei: BigNumber = await provider.getBalance(
-      _jbV3EthTerminal
-    );
+  it.only(
+    "Should log a change in the terminal balance, if the event cum sum is not consistent with it",
+    async () => {
+      const currentBalanceInWei: BigNumber = await provider.getBalance(
+        _jbV3EthTerminal
+      );
 
-    // We set an arbitrary previous balance, 100 wei less than current
-    testRuntime.context.storage.putJson(
-      "balance",
-      currentBalanceInWei.sub(100).toString()
-    );
+      // We set an arbitrary previous balance, 100 wei less than current
+      testRuntime.context.storage.putJson(
+        "balance",
+        currentBalanceInWei.sub(100).toString()
+      );
 
-    // The transaction payload value
-    console.log(terminalContract.interface.parseLog({"Pay", payPayload}));
+      // The transaction payload value
+      console.log(terminalContract.address);
+      console.log(payPayload);
+      console.log(await provider.getBlockNumber());
 
-    // Execute the action based on a single transaction with a Pay event of 0xc6f3b40b6c0000
-    await testRuntime.execute(readBalance, payPayload);
+      // Execute the action based on a single transaction with a Pay event of 0xc6f3b40b6c0000
+      await testRuntime.execute(readBalance, distributePayoutPayload);
 
-    // expect(
-    //   await testRuntime.context.storage.getJson(
-    //     "difference-" + payPayload.blockNumber
-    //   )
-    // ).to.be.eql.to("100");
-  });
+      console.log(
+        await testRuntime.context.storage.getJson(
+          "difference-" + (await provider.getBlockNumber())
+        )
+      );
+      console.log(await provider.getBlockNumber());
+      expect(
+        await testRuntime.context.storage.getJson(
+          "difference-" + payPayload.blockNumber
+        )
+      ).to.eql("100");
+    }
+  ).timeout(50000);
 });

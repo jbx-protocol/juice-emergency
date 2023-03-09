@@ -94,7 +94,7 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
     for (let i = 0; i < distributePayoutsEvents.length; i++) {
       // Counting if distributing to allocator or EOA only:
       if (distributePayoutsEvents[i].args?.projectId != 0)
-        cumSum = cumSum.sub(distributePayoutsEvents[i].args?.amount);
+        cumSum = cumSum.sub(distributePayoutsEvents[i].args?.distributedAmount);
     }
 
     for (let i = 0; i < useAllowanceEvents.length; i++) {
@@ -111,11 +111,17 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
         "difference-" + blockEvent.blockNumber,
         balanceInWei.sub(previousBalance).sub(cumSum)
       );
+      console.log(
+        "difference - ",
+        balanceInWei.sub(previousBalance).sub(cumSum)
+      );
+      console.log();
 
       await context.storage.putJson(
         "sum_events-" + blockEvent.blockNumber,
         cumSum
       );
+      console.log("cumSum - ", cumSum);
 
       await context.storage.putJson(
         "terminal_balance-" + blockEvent.blockNumber,
@@ -128,21 +134,23 @@ export const readBalance: ActionFn = async (context: Context, event: Event) => {
       );
 
       // Define message for Discord + Telegram
-      const message = `cumSum: ${cumSum}`
-      console.log('Message: ', message);
+      const message = `cumSum: ${cumSum}`;
+      console.log("Message: ", message);
 
-      // Discord hook
-      fetch(process.env.DISCORD_WEBHOOK as unknown as URL, {
-        body: JSON.stringify({ content: message }),
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      }).then(res => res.json())
-      .then(json => console.log('Discord Response: ', json))
+      // TODO: npm "fetch"
 
-      // Telegram hook
-      fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`)
-      .then(res => res.json())
-      .then(json => console.log('Telegram Response: ', json))
+      // // Discord hook
+      // fetch(process.env.DISCORD_WEBHOOK as unknown as URL, {
+      //   body: JSON.stringify({ content: message }),
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      // }).then(res => res.json())
+      // .then(json => console.log('Discord Response: ', json))
+
+      // // Telegram hook
+      // fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&text=${message}`)
+      // .then(res => res.json())
+      // .then(json => console.log('Telegram Response: ', json))
     }
   }
 };
